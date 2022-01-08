@@ -1,0 +1,32 @@
+@media (max-width: 576px) {
+    table thead {
+        display: none;
+        /* background-color: var(--tblr-body-bg)!important; */
+    }
+    table {
+        background-color: var(--tblr-body-bg)!important;
+    }
+    table tr {
+        display: block;
+        margin-bottom: 1.6rem;
+        background-color: #fff!important;
+    }
+    table td {
+        display: flex;
+        width: inherit!important;
+        max-width: inherit!important;
+        text-align: left!important;
+        padding-left: 0!important;
+        padding-right: 0!important;
+    }
+    table td .td-wrap {
+        text-align: right!important;
+        background-color: lightcoral;
+        flex: 1;
+    }
+    table td:before {
+        width: 50%;
+        content: attr(data-th) ":";
+        display: block;
+    }
+}
