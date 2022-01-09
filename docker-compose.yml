@@ -1,0 +1,8 @@
+version: '3.7'
+
+services:
+  application:
+    image: registry.cn-hangzhou.aliyuncs.com/xfschain/xfschain-explorer-react
+    restart: always
+    ports:
+      - "9014:80"
