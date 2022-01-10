@@ -8,6 +8,9 @@ pipeline {
      }
     stages {
         stage('BuildAndRelease') {
+            when {
+                branch 'main'
+            }
             steps {
                 script {
                     dockerImage = docker.build("${IMAGE_REPOSITORY}/${IMAGE_NAME}",
