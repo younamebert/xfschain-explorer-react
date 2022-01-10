@@ -34,7 +34,7 @@ function mergeTableData(columns = [], data = []) {
 }
 
 export default function Table(props) {
-    let { columns, data, loading, emptyRender } = props;
+    let { columns, data, emptyRender } = props;
     let { emptyText} = props;
     columns = columns || [];
     data = data || [];

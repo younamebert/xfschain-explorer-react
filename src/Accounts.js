@@ -2,10 +2,8 @@ import qs from 'qs';
 import React from 'react';
 import {
     useLocation,
-    useHistory
 } from "react-router-dom";
 import { Table, Pagination } from './components';
-import { timeformat } from './util';
 import intl from 'react-intl-universal';
 import services from './services';
 import { atto2base } from './util/xfslibutil';
@@ -101,19 +99,6 @@ class Accounts extends React.Component {
         }
     }
     render() {
-        let typeFormat = ({ type }) => {
-            let text = intl.get('ACCOUNT_DETAIL_TYPE_EXTERNAL');
-            switch (type) {
-                case 1:
-                    text = intl.get('ACCOUNT_DETAIL_TYPE_CONTRACT');
-                default:
-            }
-            return (
-                <div>
-                    {text}
-                </div>
-            )
-        }
         return (
             <div>
                 <h1 className="mb-4">

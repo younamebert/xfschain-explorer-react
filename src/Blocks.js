@@ -2,14 +2,13 @@ import qs from 'qs';
 import React from 'react';
 import {
     useLocation,
-    useHistory
   } from "react-router-dom";
 import { Table,Pagination } from './components';
 import { timeformat } from './util';
 import intl from 'react-intl-universal';
 import services from './services';
 import { atto2base } from './util/xfslibutil';
-import { defaultIntNumberFormat,defaultrNumberFormatFF2,defaultrNumberFormatFF4,hashesUnitCover } from './util/common';
+import { defaultIntNumberFormat,defaultrNumberFormatFF4 } from './util/common';
 const api = services.api;
 function PaginationWapper(props) {
     let location = useLocation();

@@ -1,16 +1,10 @@
 import React from 'react';
-import {
-    useLocation,
-    useHistory
-} from "react-router-dom";
 import intl from 'react-intl-universal';
-import _ from 'lodash';
-import { Table, Pagination } from './components';
 import { timeformat } from './util';
 import services from './services';
 import { atto2base, atto2nano } from './util/xfslibutil';
 
-import { dataFormat, defaultIntNumberFormat, defaultrNumberFormatFF4, defaultrNumberFormatFF6, hexToUint8Array, intToHex, uint8ArrayToText } from './util/common';
+import { dataFormat, defaultIntNumberFormat, defaultrNumberFormatFF6, hexToUint8Array, } from './util/common';
 
 const api = services.api;
 class TXDetail extends React.Component {
@@ -41,7 +35,7 @@ class TXDetail extends React.Component {
         }
     }
     async componentDidMount() {
-        const { history, location, match } = this.props;
+        const { history, match } = this.props;
         const { params } = match;
         // console.log(`data`, data);
         try {

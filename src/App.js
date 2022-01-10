@@ -1,5 +1,4 @@
 import logo from './logo.svg';
-import iconJustify from './icons/justify.svg';
 import _ from 'lodash';
 import axios from 'axios';
 import intl from 'react-intl-universal';
@@ -23,13 +22,11 @@ import BlockDetail from './BlockDetail';
 import TxDetail from './TxDetail';
 import AccountDetail from './AccountDetail';
 import Tokens from './Tokens';
-import TokenDetail from './TokenDetail';
 import NFTsPage from './NFTsPage';
 import classNames from 'classnames';
 import ErrorPage from './404';
 import BlankPage from './BlankPage';
 import services from './services';
-import { BrowserRouter } from 'react-router-dom';
 const api = services.api;
 function NavItem({ href, children, ...props }) {
   let location = useLocation();
