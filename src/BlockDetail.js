@@ -1,14 +1,10 @@
 import React from 'react';
-import {
-    useLocation,
-    useHistory
-} from "react-router-dom";
 import intl from 'react-intl-universal';
-import { Table, Pagination } from './components';
+import { Table, } from './components';
 import { timeformat } from './util';
 import services from './services';
 import { atto2base } from './util/xfslibutil';
-import { defaultIntNumberFormat, defaultrNumberFormatFF2, defaultrNumberFormatFF4, hashesUnitCover,defaultrNumberFormatFF6 } from './util/common';
+import { defaultIntNumberFormat, defaultrNumberFormatFF4,defaultrNumberFormatFF6 } from './util/common';
 const api = services.api;
 class BlockDetail extends React.Component {
     constructor(props) {
@@ -65,7 +61,7 @@ class BlockDetail extends React.Component {
         }
     }
     async componentDidMount() {
-        const { history, location, match } = this.props;
+        const { history, match } = this.props;
         const { params } = match;
         try {
             const data = await api.getBlockByHash(params.hash);

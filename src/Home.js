@@ -2,7 +2,7 @@ import React from 'react';
 import { Table } from './components';
 import intl from 'react-intl-universal';
 import services from './services';
-import { nowtimeformat, timeformat } from './util';
+import { timeformat } from './util';
 import { defaultIntNumberFormat,defaultrNumberFormatFF2,defaultrNumberFormatFF4,hashesUnitCover } from './util/common';
 import { atto2base } from './util/xfslibutil';
 import Chart from "react-apexcharts";
@@ -135,11 +135,11 @@ class Home extends React.Component {
     }
     
     async componentDidMount() {
-        let status = await api.getStatus();
-        let latest = await api.getLatest();
-        const { blocks, txs } = latest;
-        this.setState({status: status, latestBlocks: blocks, latestTxs: txs});
         try{
+            let status = await api.getStatus();
+            let latest = await api.getLatest();
+            const { blocks, txs } = latest;
+            this.setState({status: status, latestBlocks: blocks, latestTxs: txs});
             let txCountByDay = await api.getTxCountByDay();
         console.log('status', txCountByDay);
         let parseTxCountByDay = () =>{

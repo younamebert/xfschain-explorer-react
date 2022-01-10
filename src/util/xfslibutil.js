@@ -15,7 +15,7 @@ function atto2base(val,pad) {
         fraction = fraction.match(/^([0-9]*[1-9]|0)(0*)/)[1];
     }
     let whole = valbn.div(base).toString(10);
-    let value = `${whole}${fraction == '0' ? '' : `.${fraction}`}`;
+    let value = `${whole}${fraction === '0' ? '' : `.${fraction}`}`;
     return value;
 }
 
@@ -51,7 +51,7 @@ function atto2nano(val,pad) {
         fraction = fraction.match(/^([0-9]*[1-9]|0)(0*)/)[1];
     }
     let whole = valbn.div(base).toString(10);
-    let value = `${whole}${fraction == '0' ? '' : `.${fraction}`}`;
+    let value = `${whole}${fraction === '0' ? '' : `.${fraction}`}`;
     return value;
 }
 function nano2atto(val) {

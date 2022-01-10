@@ -2,11 +2,9 @@ import qs from 'qs';
 import React from 'react';
 import {
     useLocation,
-    useHistory
 } from "react-router-dom";
 import intl from 'react-intl-universal';
 import { Table, Pagination } from './components';
-import { timeformat } from './util';
 import services from './services';
 import { atto2base } from './util/xfslibutil';
 import { defaultrNumberFormatFF4, defaultrNumberFormatFF6 } from './util/common';

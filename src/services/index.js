@@ -1,4 +1,3 @@
 import * as api from './api';
-export default {
-    api
-}
+// eslint-disable-next-line import/no-anonymous-default-export
+export default {api};

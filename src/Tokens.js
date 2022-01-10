@@ -1,11 +1,9 @@
 import qs from 'qs';
 import React from 'react';
 import {
-    useLocation,
-    useHistory
+    useLocation
   } from "react-router-dom";
 import { Table,Pagination } from './components';
-import { timeformat } from './util';
 import intl from 'react-intl-universal';
 import page_placeholder from "./images/page_placeholder.svg";
 import services from './services';
@@ -70,7 +68,7 @@ class Tokens extends React.Component {
         }
     }
     async componentDidMount(){
-        const { history, location } = this.props;
+        const { location } = this.props;
         const {search} = location;
         if (this.state.pageDisabled){
             

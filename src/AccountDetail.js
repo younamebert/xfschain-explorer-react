@@ -1,11 +1,9 @@
 import React from 'react';
 import {
     useLocation,
-    useHistory
 } from "react-router-dom";
 import intl from 'react-intl-universal';
 import { Table, Pagination } from './components';
-import { timeformat } from './util';
 import services from './services';
 import { atto2base } from './util/xfslibutil';
 import { defaultIntNumberFormat, defaultNumberFormatFF9, defaultrNumberFormatFF4, defaultrNumberFormatFF6 } from './util/common';
@@ -119,10 +117,8 @@ class AccountDetail extends React.Component {
         const balanceVal = atto2base(this.state.account.balance);
         let typeFormat = ({ type }) => {
             let text = intl.get('ACCOUNT_DETAIL_TYPE_EXTERNAL');
-            switch (type) {
-                case 1:
-                    text = intl.get('ACCOUNT_DETAIL_TYPE_CONTRACT');
-                default:
+            if (type === 1){
+                text = intl.get('ACCOUNT_DETAIL_TYPE_CONTRACT');
             }
             return (
                 <div>
