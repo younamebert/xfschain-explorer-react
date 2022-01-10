@@ -4,7 +4,7 @@ class Txs extends React.Component {
     render() {
         return (
             <div>
-                txs
+                txs.
             </div>
         );
     }
