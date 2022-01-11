@@ -139,9 +139,7 @@ class Home extends React.Component {
             let status = await api.getStatus();
             let latest = await api.getLatest();
             const { blocks, txs } = latest;
-            this.setState({status: status, latestBlocks: blocks, latestTxs: txs});
             let txCountByDay = await api.getTxCountByDay();
-        console.log('status', txCountByDay);
         let parseTxCountByDay = () =>{
             let times = txCountByDay.map(({time})=>{
                 return moment(time).format('MM-DD');
@@ -150,6 +148,7 @@ class Home extends React.Component {
                 return count;
             })
             this.setState({
+                status: status, latestBlocks: blocks, latestTxs: txs,
                 txCountByDayChartOptions:{
                     ...this.state.txCountByDayChartOptions,
                     xaxis: {
@@ -164,7 +163,6 @@ class Home extends React.Component {
                     }
                 ]
             });
-            console.log(times);
         }
         parseTxCountByDay();
      } catch(e){
