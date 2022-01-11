@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        IMAGE_REPOSITORY = 'registry.cn-hangzhou.aliyuncs.com'
+        IMAGE_REPOSITORY = 'registry.cn-hongkong.aliyuncs.com'
         IMAGE_NAME = 'xfschain/xfschain-explorer-react'
         CI = 'false'
         REACT_APP_API_BASE_URL = 'https://api.scan.xfs.tech/'
