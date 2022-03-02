@@ -7,6 +7,7 @@ import { defaultIntNumberFormat,defaultrNumberFormatFF2,defaultrNumberFormatFF4,
 import { atto2base } from './util/xfslibutil';
 import Chart from "react-apexcharts";
 import moment from 'moment';
+import { flatMap } from 'lodash';
 const api = services.api;
 
 
@@ -88,57 +89,70 @@ class Home extends React.Component {
                 }
             ],
             latestBlocks: [
-                // {
-                //     id: 12112,
-                //     hash: "0x00000062be70b7bf0319404c8ddfb0abd0c741a29b4bb98a2f92796e48580966",
-                //     height: 12111,
-                //     version: 0,
-                //     hashPrevBlock: "0x000000dca98d022526682c1165f001c12f71a335240ffe28a147dbc21c5e984a",
-                //     timestamp: 1639535358,
-                //     coinbase: "ig3Zb1paNi1iTob5k3853cDPVSBaCuLZU",
-                //     stateRoot: "0x8da47c1f919bc94af56a9421c2681dfeb902edd6841180a7040f4ffce83fa475",
-                //     transactionsRoot: "0x3cb1db3623d0a999e92f82b930ff1520406d17de11621818fe728fb5f7e9d8ad",
-                //     receiptsRoot: "0x89642220dc068df76533ed40678dba141fbdf1ca1626bf87eef43bf5c54b9a35",
-                //     gasLimit: 2500000,
-                //     gasUsed: 250000,
-                //     bits: 4278190109,
-                //     nonce: 46300,
-                //     extraNonce: "12603133301523114000",
-                //     txCount: 10,
-                //     rewards: "0"
-                // },
+                {
+                    id: 12112,
+                    hash: "0x00000062be70b7bf0319404c8ddfb0abd0c741a29b4bb98a2f92796e48580966",
+                    height: 12111,
+                    version: 0,
+                    hashPrevBlock: "0x000000dca98d022526682c1165f001c12f71a335240ffe28a147dbc21c5e984a",
+                    timestamp: 1639535358,
+                    coinbase: "ig3Zb1paNi1iTob5k3853cDPVSBaCuLZU",
+                    stateRoot: "0x8da47c1f919bc94af56a9421c2681dfeb902edd6841180a7040f4ffce83fa475",
+                    transactionsRoot: "0x3cb1db3623d0a999e92f82b930ff1520406d17de11621818fe728fb5f7e9d8ad",
+                    receiptsRoot: "0x89642220dc068df76533ed40678dba141fbdf1ca1626bf87eef43bf5c54b9a35",
+                    gasLimit: 2500000,
+                    gasUsed: 250000,
+                    bits: 4278190109,
+                    nonce: 46300,
+                    extraNonce: "12603133301523114000",
+                    txCount: 10,
+                    rewards: "0"
+                },
             ],
             latestTxs: [
-                // {
-                //     id: 10571,
-                //     blockHash: "0x000000a797900f9a7a6bd6185bd111c47b23f649811c4e383b83d5619d861f09",
-                //     blockHeight: 17082,
-                //     blockTime: 1639652840,
-                //     version: 0,
-                //     from: "f3A6FZfuesZ98dFmduCR7YLffmkqnjgnA",
-                //     to: "fKg8tMyp4uvMFiJ9J71Xxn5G5dbLbse4Q",
-                //     gasPrice: "10000000000",
-                //     gasLimit: "25000",
-                //     gasUsed: "25000",
-                //     gasFee: "250000000000000",
-                //     data: null,
-                //     nonce: 858,
-                //     value: "410000000000000000",
-                //     signature: null,
-                //     hash: "0x463ff654b54bbb815e8e70dbae28d061e5348b53cabdf94a5f7d3e55c5d17136",
-                //     status: 1,
-                //     type: 0
-                // },
+                {
+                    id: 10571,
+                    blockHash: "0x000000a797900f9a7a6bd6185bd111c47b23f649811c4e383b83d5619d861f09",
+                    blockHeight: 17082,
+                    blockTime: 1639652840,
+                    version: 0,
+                    from: "f3A6FZfuesZ98dFmduCR7YLffmkqnjgnA",
+                    to: "fKg8tMyp4uvMFiJ9J71Xxn5G5dbLbse4Q",
+                    gasPrice: "10000000000",
+                    gasLimit: "25000",
+                    gasUsed: "25000",
+                    gasFee: "250000000000000",
+                    data: null,
+                    nonce: 858,
+                    value: "410000000000000000",
+                    signature: null,
+                    hash: "0x463ff654b54bbb815e8e70dbae28d061e5348b53cabdf94a5f7d3e55c5d17136",
+                    status: 1,
+                    type: 0
+                },
                 
             ],
         }
     }
-    
+   gethomedata = async() => {
+       var status = await api.getStatus();
+       var latest = await api.getLatest();
+
+       var blocks = await latest.result.blocks
+       var txs = await latest.result.txs
+       console.log(JSON.stringify(txs))
+     this.setState({status:status.result,latestBlocks: blocks,latestTxs:txs})
+     
+    };
+        
     async componentDidMount() {
+        this.gethomedata()
         try{
             let status = await api.getStatus();
             let latest = await api.getLatest();
+            
             const { blocks, txs } = latest;
+            
             let txCountByDay = await api.getTxCountByDay();
         let parseTxCountByDay = () =>{
             let times = txCountByDay.map(({time})=>{
@@ -147,8 +161,10 @@ class Home extends React.Component {
             let counts = txCountByDay.map(({count})=>{
                 return count;
             })
+            // let status.
+            console.log("bert",JSON.stringify(status));
             this.setState({
-                status: status, latestBlocks: blocks, latestTxs: txs,
+                status: status.result, latestBlocks: blocks, latestTxs: txs,
                 txCountByDayChartOptions:{
                     ...this.state.txCountByDayChartOptions,
                     xaxis: {
@@ -163,7 +179,9 @@ class Home extends React.Component {
                     }
                 ]
             });
+            // action.getRefundList(theQuery)
         }
+        // console.log(JSON.stringify(this.status));
         parseTxCountByDay();
      } catch(e){
 
@@ -334,7 +352,8 @@ class Home extends React.Component {
                                             fontSize: '26px',
                                             fontWeight: 400,
                                         }}>
-                                            {defaultIntNumberFormat(this.state.status.tps)}
+                                            
+                                            {(this.state.status.tps)}
                                             <span style={{
                                                 fontSize: '18px',
                                             }}> TXS / S</span>
@@ -382,8 +401,8 @@ class Home extends React.Component {
                                         field: 'height', name: intl.get('HOME_LATEST_BLOCKS_HEIGHT'),
                                         render: (item) => {
                                             return (
-                                                <a href={`/blocks/${item.hash}`}>
-                                                    {item.height}
+                                                <a href={`/blocks/${item.Hash}`}>
+                                                    {item.Height}
                                                 </a>
                                             );
                                         }
@@ -391,7 +410,7 @@ class Home extends React.Component {
                                     {
                                         field: 'timestamp', name: intl.get('HOME_LATEST_BLOCKS_TIME'),
                                         render: (item) => {
-                                            let t = parseInt(item.timestamp);
+                                            let t = parseInt(item.Timestamp);
                                             let datetime = new Date(t * 1000);
                                             const timestr = timeformat(datetime);
                                             return (
@@ -407,8 +426,8 @@ class Home extends React.Component {
                                         render: (item) => {
                                             return (
                                                 <div className="text-truncate">
-                                                    <a href={`/accounts/${item.coinbase}`}>
-                                                        {item.coinbase}
+                                                    <a href={`/accounts/${item.Coinbase}`}>
+                                                        {item.Coinbase}
                                                     </a>
                                                 </div>
                                             );
@@ -418,7 +437,7 @@ class Home extends React.Component {
                                     render: (item) => {
                                         return (
                                             <div>
-                                                {defaultIntNumberFormat(item.txCount)}
+                                                {defaultIntNumberFormat(item.TxCount)}
                                             </div>
                                         );
                                     }},
@@ -426,10 +445,10 @@ class Home extends React.Component {
                                     thStyle: {textAlign: 'right'},
                                     tdStyle: { textAlign: 'right'},
                                     render: (item) => {
-                                        const rewards = atto2base(item.rewards);
+                                        // const rewards = atto2base(item.Rewards);
                                         return (
                                             <span>
-                                                {defaultrNumberFormatFF4(rewards)}
+                                                {defaultrNumberFormatFF4(item.Rewards)}
                                                 <span style={{
                                                 fontSize: '.8rem',
                                             }}> XFSC</span>
@@ -460,8 +479,8 @@ class Home extends React.Component {
                                         render: (item) => {
                                             return (
                                                 <div className="text-truncate">
-                                                    <a href={`/txs/${item.hash}`}>
-                                                        {item.hash}
+                                                    <a href={`/txs/${item.Hash}`}>
+                                                        {item.Hash}
                                                     </a>
                                                 </div>
                                             );
@@ -470,15 +489,17 @@ class Home extends React.Component {
                                     {
                                         name: intl.get('HOME_LATEST_TRANSACTIONS_ADDRESS'),
                                         render: (item) => {
-                                            let fromAddr = splitAndEllipsisAddress(item.from);
-                                            let toAddress = splitAndEllipsisAddress(item.to);
+                                            console.log(item.From)
+                                            
+                                            // var fromAddr = splitAndEllipsisAddress(item.From);
+                                            // let toAddress = splitAndEllipsisAddress(item.To);
                                             return (
                                                 <span>
-                                                    <a href={`/accounts/${item.from}`}>
-                                                            {fromAddr}
+                                                    <a href={`/accounts/${item.From}`}>
+                                                            {item.From}
                                                         </a>&nbsp;&raquo;&nbsp;
-                                                        <a href={`/accounts/${item.to}`}>
-                                                            {toAddress}
+                                                        <a href={`/accounts/${item.To}`}>
+                                                            {item.To}
                                                         </a>
                                                 </span>
                                             );
@@ -489,7 +510,7 @@ class Home extends React.Component {
                                         thStyle: {textAlign: 'right'},
                                         tdStyle: {textAlign: 'right'},
                                         render: (item) => {
-                                            let value = atto2base(item.value);
+                                            let value = atto2base(item.Value);
                                             return (
                                                 <span>
                                                 {defaultrNumberFormatFF4(value)}

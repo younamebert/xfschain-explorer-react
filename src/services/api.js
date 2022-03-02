@@ -1,20 +1,20 @@
 import axios from "axios";
 
 const apiCli = axios.create({
-    baseURL: process.env.REACT_APP_API_BASE_URL,
+    baseURL: "http://localhost:8080",
     timeout: 1000
 });
 
 export function getStatus(options){
     return new Promise((resolve, reject)=>{
         apiCli.request({
-            url: '/status',
+            url: '/index/status',
             method: 'GET',
             ...(options||{})
         }).then(res=>{
             resolve(res.data);
         }).catch(err=>{
-            reject(err.data);
+            reject(err.message);
         });
     });
 }
@@ -22,20 +22,20 @@ export function getStatus(options){
 export function getLatest(options){
     return new Promise((resolve, reject)=>{
         apiCli.request({
-            url: '/latest',
+            url: '/index/lastest',
             method: 'GET',
             ...(options||{})
         }).then(res=>{
             resolve(res.data);
         }).catch(err=>{
-            reject(err.data);
+            reject(err.message);
         });
     });
 }
 export function getBlocksByPage(options){
     return new Promise((resolve, reject)=>{
         apiCli.request({
-            url: '/blocks',
+            url: '/blocks/getblocks',
             method: 'GET',
             ...(options||{})
         }).then(res=>{
@@ -49,7 +49,7 @@ export function getBlocksByPage(options){
 export function getTransactionsByPage(options){
     return new Promise((resolve, reject)=>{
         apiCli.request({
-            url: '/txs',
+            url: 'transfer/gettxs',
             method: 'GET',
             ...(options||{})
         }).then(res=>{

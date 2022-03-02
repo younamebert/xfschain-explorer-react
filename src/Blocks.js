@@ -73,9 +73,10 @@ class Blocks extends React.Component {
         pageNum = parseInt(pageNum||1);
         try{
             let pagedata = await api.getBlocksByPage({params: {
-                p: pageNum,
+                page: pageNum,
             }});
-            let {total,records} = pagedata;
+            let total = pagedata.result.limits;
+            let records = pagedata.result.data;
             let pageSize = this.state.page.pageSize;
             let pn = parseInt(total / pageSize);
             let mod = total % pageSize;
@@ -106,8 +107,8 @@ class Blocks extends React.Component {
                                 field: 'height', name: intl.get('BLOCKS_HEIGHT'), 
                                 render: (item) => {
                                     return (
-                                        <a href={`/blocks/${item.hash}`}>
-                                            {item.height}
+                                        <a href={`/blocks/${item.Hash}`}>
+                                            {item.Height}
                                         </a>
                                     );
                                 }
@@ -118,8 +119,8 @@ class Blocks extends React.Component {
                                 render: (item) => {
                                     return (
                                         <div className="text-truncate">
-                                            <a href={`/blocks/${item.hash}`}>
-                                                {item.hash}
+                                            <a href={`/blocks/${item.Hash}`}>
+                                                {item.Hash}
                                             </a>
                                         </div>
                                     );
@@ -128,7 +129,7 @@ class Blocks extends React.Component {
                             {
                                 field: 'timestamp', name: intl.get('BLOCKS_TIME'),
                                 render: (item) => {
-                                    let time = parseInt(item.timestamp);
+                                    let time = parseInt(item.Timestamp);
                                     const timestr = timeformat(new Date(time * 1000));
                                     return (
                                         <span className="fs-6">
@@ -143,8 +144,8 @@ class Blocks extends React.Component {
                                  render: (item) => {
                                     return (
                                         <div className="text-truncate">
-                                            <a href={`/accounts/${item.coinbase}`}>
-                                                {item.coinbase}
+                                            <a href={`/accounts/${item.Coinbase}`}>
+                                                {item.Coinbase}
                                             </a>
                                         </div>
                                     );
@@ -156,7 +157,7 @@ class Blocks extends React.Component {
                             render: (item)=>{
                                 return (
                                     <span>
-                                        {defaultIntNumberFormat(item.txCount)}
+                                        {defaultIntNumberFormat(item.TxCount)}
                                     </span>
                                 );
                             },
@@ -167,7 +168,7 @@ class Blocks extends React.Component {
                               render: (item)=>{
                                   return (
                                       <span>
-                                          {defaultIntNumberFormat(item.gasUsed)}
+                                          {defaultIntNumberFormat(item.GasUsed)}
                                       </span>
                                   );
                               }},
@@ -177,7 +178,7 @@ class Blocks extends React.Component {
                             render: (item)=>{
                                 return (
                                     <span>
-                                        {defaultIntNumberFormat(item.gasLimit)}
+                                        {defaultIntNumberFormat(item.GasLimit)}
                                     </span>
                                 );
                             }},
@@ -186,10 +187,10 @@ class Blocks extends React.Component {
                                     tdStyle: { textAlign: 'right', },
                                     render: (item) => {
                                         
-                                        let value = atto2base(item.rewards);
+                                        // let value = atto2base(item.Rewards);
                                         return (
                                             <span>
-                                                {defaultrNumberFormatFF4(value)}
+                                                {defaultrNumberFormatFF4(item.Rewards)}
                                                 <span style={{
                                                 fontSize: '.8rem',
                                             }}> XFSC</span>

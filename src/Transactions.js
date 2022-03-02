@@ -75,10 +75,11 @@ class Transactions extends React.Component {
         try {
             let pagedata = await api.getTransactionsByPage({
                 params: {
-                    p: pageNum,
+                    page: pageNum,
                 }
             });
-            let { total, records } = pagedata;
+            let total = pagedata.result.limits;
+            let records = pagedata.result.data;
             let pageSize = this.state.page.pageSize;
             let pn = parseInt(total / pageSize);
             let mod = total % pageSize;
@@ -114,7 +115,7 @@ class Transactions extends React.Component {
                                 render: (item) => {
                                     return (
                                         <span className="fs-6">
-                                            {item.createTime}
+                                            {item.CreateTime}
                                         </span>
                                     );
                                 }
@@ -125,8 +126,8 @@ class Transactions extends React.Component {
                                 render: (item) => {
                                     return (
                                         <div className="text-truncate">
-                                            <a href={`/txs/${item.hash}`}>
-                                                {item.hash}
+                                            <a href={`/txs/${item.Hash}`}>
+                                                {item.Hash}
                                             </a>
                                         </div>
                                     );
@@ -136,8 +137,8 @@ class Transactions extends React.Component {
                                 field: 'blockHeight', name: intl.get('TXS_BLOCK'),
                                 render: (item) => {
                                     return (
-                                        <a href={`/blocks/${item.blockHash}`}>
-                                            {item.blockHeight}
+                                        <a href={`/blocks/${item.BlockHash}`}>
+                                            {item.BlockHeight}
                                         </a>
                                     );
                                 }
@@ -149,8 +150,8 @@ class Transactions extends React.Component {
                                 render: (item) => {
                                     return (
                                         <div className="text-truncate">
-                                            <a href={`/accounts/${item.from}`}>
-                                                {item.from}
+                                            <a href={`/accounts/${item.From}`}>
+                                                {item.From}
                                             </a>
                                         </div>
 
@@ -163,8 +164,8 @@ class Transactions extends React.Component {
                                 render: (item) => {
                                     return (
                                         <div className="text-truncate">
-                                            <a href={`/accounts/${item.to}`}>
-                                                {item.to}
+                                            <a href={`/accounts/${item.To}`}>
+                                                {item.To}
                                             </a>
                                         </div>
                                     );
@@ -175,10 +176,10 @@ class Transactions extends React.Component {
                                 thStyle: { textAlign: 'right' },
                                 tdStyle: { textAlign: 'right' },
                                 render: (item) => {
-                                    let val = atto2base(item.value);
+                                    // let val = atto2base(item.value);
                                     return (
                                         <span>
-                                            {defaultrNumberFormatFF4(val)}
+                                            {defaultrNumberFormatFF4(item.value)}
                                             <span style={{
                                                 fontSize: '.8rem',
                                             }}> XFSC</span>
@@ -191,7 +192,7 @@ class Transactions extends React.Component {
                                 thStyle: { textAlign: 'right' },
                                 tdStyle: { textAlign: 'right' },
                                 render: (item) => {
-                                    let val = atto2base(item.gasFee);
+                                    let val = atto2base(item.GasFee);
                                     return (
                                         <span>
                                             {defaultrNumberFormatFF6(val)}
