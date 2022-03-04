@@ -40,27 +40,27 @@ class TXDetail extends React.Component {
         // console.log(`data`, data);
         try {
             const data = await api.getTransactionByHash(params.hash);
-            this.setState({data: data});
+            this.setState({data: data.result.data});
         } catch (e) {
             history.replace('/404');
             return;
         }
     }
     render() {
-        let time = parseInt(this.state.data.blockTime);
+        let time = parseInt(this.state.data.BlockTime);
         const timestr = timeformat(new Date(time * 1000));
-        const valuestr = atto2base(this.state.data.value);
-        const gasPriceVal = atto2nano(this.state.data.gasPrice);
-        const gasFeeVal = atto2base(this.state.data.gasFee);
+        const valuestr = atto2base(this.state.data.Value);
+        const gasPriceVal = atto2nano(this.state.data.GasPrice);
+        const gasFeeVal = atto2base(this.state.data.GasFee);
         let datastr = '';
-        if (this.state.data.data){
+        if (this.state.data.Data){
             datastr = dataFormat({
-                data: hexToUint8Array(this.state.data.data||''),
+                data: hexToUint8Array(this.state.data.Data||''),
                 format: this.state.dataFormat
             }) || 'Cannot Preview!';
         }
         let statusFormat = ()=>{
-            switch (this.state.data.status){
+            switch (this.state.data.Status){
                 case 1:
                     return intl.get('TX_DETAIL_STATUS_SUCCESS');
                 default:
@@ -80,7 +80,7 @@ class TXDetail extends React.Component {
                                     {intl.get('TX_DETAIL_HASH')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {this.state.data.hash}
+                                    {this.state.data.Hash}
                                 </div>
                             </div>
                         </li>
@@ -91,7 +91,7 @@ class TXDetail extends React.Component {
                                 </div>
                                 <div className="col-md-10">
                                     <div className="d-flex">
-                                        {statusFormat(this.state.data.status)}
+                                        {statusFormat(this.state.data.Status)}
                                     </div>
                                 </div>
                             </div>
@@ -103,8 +103,8 @@ class TXDetail extends React.Component {
                                 </div>
                                 <div className="col-md-10">
                                     <div className="d-flex">
-                                        <a href={`/blocks/${this.state.data.blockHash}`}>
-                                            {this.state.data.blockHeight}
+                                        <a href={`/blocks/${this.state.data.BlockHash}`}>
+                                            {this.state.data.BlockHeight}
                                         </a>
                                     </div>
                                 </div>
@@ -116,7 +116,7 @@ class TXDetail extends React.Component {
                                     {intl.get('TX_DETAIL_VERSION')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {this.state.data.version}
+                                    {this.state.data.Version}
                                 </div>
                             </div>
                         </li>
@@ -137,8 +137,8 @@ class TXDetail extends React.Component {
                                 </div>
                                 <div className="col-md-10">
                                     <div className="d-flex">
-                                        <a href={`/accounts/${this.state.data.from}`}>
-                                            {this.state.data.from}
+                                        <a href={`/accounts/${this.state.data.TxFrom}`}>
+                                            {this.state.data.TxFrom}
                                         </a>
                                     </div>
                                 </div>
@@ -151,8 +151,8 @@ class TXDetail extends React.Component {
                                 </div>
                                 <div className="col-md-10">
                                     <div className="d-flex">
-                                        <a href={`/accounts/${this.state.data.to}`}>
-                                            {this.state.data.to}
+                                        <a href={`/accounts/${this.state.data.TxTo}`}>
+                                            {this.state.data.TxTo}
                                         </a>
                                     </div>
                                 </div>
@@ -184,7 +184,7 @@ class TXDetail extends React.Component {
                                     {intl.get('TX_DETAIL_GAS_LIMIT')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {defaultIntNumberFormat(this.state.data.gasLimit)}
+                                    {defaultIntNumberFormat(this.state.data.GasLimit)}
                                 </div>
                             </div>
                         </li>
@@ -194,7 +194,7 @@ class TXDetail extends React.Component {
                                     {intl.get('TX_DETAIL_GAS_USED')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {defaultIntNumberFormat(this.state.data.gasUsed)}
+                                    {defaultIntNumberFormat(this.state.data.GasUsed)}
                                 </div>
                             </div>
                         </li>
@@ -214,7 +214,7 @@ class TXDetail extends React.Component {
                                     {intl.get('TX_DETAIL_NONCE')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {this.state.data.nonce}
+                                    {this.state.data.Nonce}
                                 </div>
                             </div>
                         </li>

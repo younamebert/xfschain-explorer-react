@@ -78,6 +78,9 @@ class Transactions extends React.Component {
                     page: pageNum,
                 }
             });
+            if (pagedata.result==null){
+                return
+            }
             let total = pagedata.result.limits;
             let records = pagedata.result.data;
             let pageSize = this.state.page.pageSize;
@@ -150,8 +153,8 @@ class Transactions extends React.Component {
                                 render: (item) => {
                                     return (
                                         <div className="text-truncate">
-                                            <a href={`/accounts/${item.From}`}>
-                                                {item.From}
+                                            <a href={`/accounts/${item.TxFrom}`}>
+                                                {item.TxFrom}
                                             </a>
                                         </div>
 
@@ -164,8 +167,8 @@ class Transactions extends React.Component {
                                 render: (item) => {
                                     return (
                                         <div className="text-truncate">
-                                            <a href={`/accounts/${item.To}`}>
-                                                {item.To}
+                                            <a href={`/accounts/${item.TxTo}`}>
+                                                {item.TxTo}
                                             </a>
                                         </div>
                                     );

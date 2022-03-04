@@ -6,6 +6,7 @@ import intl from 'react-intl-universal';
 import { Table, Pagination } from './components';
 import services from './services';
 import { atto2base } from './util/xfslibutil';
+import {  isNil } from 'lodash';
 import { defaultIntNumberFormat, defaultNumberFormatFF9, defaultrNumberFormatFF4, defaultrNumberFormatFF6 } from './util/common';
 import classNames from 'classnames';
 import qs from 'qs';
@@ -68,13 +69,14 @@ class AccountDetail extends React.Component {
             ]
         }
     }
+  
     async componentDidMount() {
         const { history, location, match } = this.props;
         const { params } = match;
         
         try {
             const data = await api.getAccountByAddress(params.address);
-            this.setState({account: data});
+            this.setState({account: data.result.data});
         }catch(e){
             history.replace('/404');
             return;
@@ -84,12 +86,17 @@ class AccountDetail extends React.Component {
         let pageNum = sq['p'];
         pageNum = parseInt(pageNum || 1);
         try {
-            let pagedata = await api.getTransactionsByAddress(params.address,{
+            let pagedata = await api.getTransactionsByAddress({
                 params: {
-                    p: pageNum,
+                    addr:params.address,
+                    page:pageNum,
                 }
             });
-            let { total, records } = pagedata;
+            if (pagedata.result==null){
+                return
+            }
+            let total = pagedata.result.limits;
+            let records = pagedata.result.data;
             let pageSize = this.state.page.pageSize;
             let pn = parseInt(total / pageSize);
             let mod = total % pageSize;
@@ -99,7 +106,6 @@ class AccountDetail extends React.Component {
             if (pageNum > pn) {
                 throw new Error('pagenum overflow');
             }
-            console.log(records);
             this.setState({
                 page: {
                     total: total,
@@ -114,42 +120,52 @@ class AccountDetail extends React.Component {
     render() {
         // let time = parseInt(this.state.data.header.timestamp);
         // const timestr = timeformat(new Date(time * 1000));
-        const balanceVal = atto2base(this.state.account.balance);
-        let typeFormat = ({ type }) => {
-            let text = intl.get('ACCOUNT_DETAIL_TYPE_EXTERNAL');
+        const balanceVal = atto2base(this.state.account.Balance);
+        let typeFormat = function(type){
+
+            if (isNil(type)){
+                return (
+                    <div>
+                        {type}
+                    </div>
+                )
+            }
+            
+            let text = intl.get('ACCOUNT_DETAIL_TYPE_CONTRACT');
             if (type === 1){
-                text = intl.get('ACCOUNT_DETAIL_TYPE_CONTRACT');
+                text = intl.get('ACCOUNT_DETAIL_TYPE_EXTERNAL');
             }
             return (
                 <div>
                     {text}
                 </div>
             )
+
         }
         let contractCreatorClasses = ()=>{
             return classNames({
-                [`d-none`]: this.state.account.type === 0
+                [`d-none`]: this.state.account.Type === 0
             },
                 'list-group-item','py-3'
             );
         }
         let contractStateRootClasses = ()=>{
             return classNames({
-                [`d-none`]: this.state.account.type === 0
+                [`d-none`]: this.state.account.Type === 0
             },
                 'list-group-item','py-3'
             );
         }
         let contractCodeClasses = () => {
             return classNames({
-                [`d-none`]: this.state.account.type === 0
+                [`d-none`]: this.state.account.Type === 0
             },
                 'card','mb-4'
             );
         }
         let contractCreateTimeClasses = () => {
             return classNames({
-                [`d-none`]: this.state.account.type === 0
+                [`d-none`]: this.state.account.Type === 0
             },
             'list-group-item','py-3'
             );
@@ -168,7 +184,7 @@ class AccountDetail extends React.Component {
                             </div>
                             <div className="col-md-10">
                                 <div className="d-flex">
-                                    {this.state.account.address}
+                                    {this.state.account.Address}
                                 </div>
                             </div>
                         </div>
@@ -189,7 +205,7 @@ class AccountDetail extends React.Component {
                                 {intl.get('ACCOUNT_DETAIL_TYPE')}:
                             </div>
                             <div className="col-md-10">
-                                {typeFormat(this.state.account.type)}
+                                {(typeFormat(this.state.account.Type))}
                             </div>
                         </div>
                     </li>
@@ -199,7 +215,7 @@ class AccountDetail extends React.Component {
                                 {intl.get('ACCOUNT_DETAIL_NONCE')}:
                             </div>
                             <div className="col-md-10">
-                            {defaultIntNumberFormat(this.state.account.nonce)}
+                            {defaultIntNumberFormat(this.state.account.Nonce)}
                             </div>
                         </div>
                     </li>
@@ -209,7 +225,7 @@ class AccountDetail extends React.Component {
                                 {intl.get('ACCOUNT_DETAIL_UPDATE_TIME')}:
                             </div>
                             <div className="col-md-10">
-                                {this.state.account.updateTime}
+                                {this.state.account.UpdateTime}
                             </div>
                         </div>
                     </li>
@@ -219,8 +235,8 @@ class AccountDetail extends React.Component {
                             {intl.get('ACCOUNT_DETAIL_CREATER')}:
                             </div>
                             <div className="col-md-10">
-                                <a href={`/accounts/${this.state.account.createFromAddress}`}>
-                                    {this.state.account.createFromAddress}
+                                <a href={`/accounts/${this.state.account.CreateFromAddress}`}>
+                                    {this.state.account.CreateFromAddress}
                                 </a>
                             </div>
                         </div>
@@ -232,7 +248,7 @@ class AccountDetail extends React.Component {
                             </div>
                             <div className="col-md-10">
                                 <div className="d-flex">
-                                    {this.state.account.stateRoot}
+                                    {this.state.account.StateRoot}
                                 </div>
                             </div>
                         </div>
@@ -244,7 +260,7 @@ class AccountDetail extends React.Component {
                             </div>
                             <div className="col-md-10">
                                 <div className="d-flex">
-                                    {this.state.account.createTime}
+                                    {this.state.account.CreateTime}
                                 </div>
                             </div>
                         </div>
@@ -276,7 +292,7 @@ class AccountDetail extends React.Component {
                                 render: (item) => {
                                     return (
                                         <span className="fs-6">
-                                            {item.createTime}
+                                            {item.CreateTime}
                                         </span>
                                     );
                                 }
@@ -287,8 +303,8 @@ class AccountDetail extends React.Component {
                                 render: (item) => {
                                     return (
                                         <div className="text-truncate">
-                                            <a href={`/txs/${item.hash}`}>
-                                                {item.hash}
+                                            <a href={`/txs/${item.Hash}`}>
+                                                {item.Hash}
                                             </a>
                                         </div>
                                     );
@@ -300,8 +316,8 @@ class AccountDetail extends React.Component {
                                 render: (item) => {
                                     return (
                                         <div className="text-truncate">
-                                            <a href={`/accounts/${item.to}`}>
-                                                {item.to}
+                                            <a href={`/accounts/${item.TxTo}`}>
+                                                {item.TxTo}
                                             </a>
                                         </div>
                                     );
@@ -312,7 +328,7 @@ class AccountDetail extends React.Component {
                                 thStyle: { textAlign: 'right' },
                                 tdStyle: { textAlign: 'right' },
                                 render: (item) => {
-                                    let val = atto2base(item.value);
+                                    let val = atto2base(item.Value);
                                     return (
                                         <span>
                                             {defaultrNumberFormatFF4(val)}
@@ -328,7 +344,7 @@ class AccountDetail extends React.Component {
                                 thStyle: { textAlign: 'right' },
                                 tdStyle: {textAlign: 'right' },
                                 render: (item) => {
-                                    let val = atto2base(item.gasFee);
+                                    let val = atto2base(item.GasFee);
                                     return (
                                         <span>
                                             {defaultrNumberFormatFF6(val)}
@@ -344,7 +360,7 @@ class AccountDetail extends React.Component {
                     </div>
                     <div className="card-footer">
                         <PaginationWapper
-                            address={this.state.account.address}
+                            address={this.state.account.Address}
                             pageSize={this.state.page.pageSize}
                             total={this.state.page.total} />
                     </div>

@@ -91,24 +91,25 @@ function SearchBar({children,value}) {
         }
       });
 
-      const { type, pathValue } = searchr;
+      let type = searchr.result.type;
+      let pathValue  = searchr.result.pathValue;
       if (type === 1){
         // history.push(`/blocks/${value}`);
         history.replace(`/loading`, {
-          to: `/blocks/${value}`
+          to: `/blocks/${pathValue}`
         });
         // window.location.reload();
         return;
       }else if(type === 2){
         // history.push(`/txs/${value}`);
         history.replace(`/loading`, {
-          to: `/txs/${value}`
+          to: `/txs/${pathValue}`
         });
         return;
       }else if(type === 3){
         // history.push(`/accounts/${value}`);
         history.replace(`/loading`, {
-          to: `/accounts/${value}`
+          to: `/accounts/${pathValue}`
         });
         return;
       }else if(type === 4){

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiCli = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: process.env.REACT_APP_API_BASE_URL,
     timeout: 1000
 });
 
@@ -63,7 +63,7 @@ export function getTransactionsByPage(options){
 export function getBlockByHash(hash,options){
     return new Promise((resolve, reject)=>{
         apiCli.request({
-            url: `/blocks/${hash}`,
+            url: `/blocks/detailed?hash=${hash}`,
             method: 'GET',
             ...(options||{})
         }).then(res=>{
@@ -77,7 +77,21 @@ export function getBlockByHash(hash,options){
 export function getTransactionByHash(hash,options){
     return new Promise((resolve, reject)=>{
         apiCli.request({
-            url: `/txs/${hash}`,
+            url: `transfer/detailed?hash=${hash}`,
+            method: 'GET',
+            ...(options||{})
+        }).then(res=>{
+            resolve(res.data);
+        }).catch(err=>{
+            reject(err.data);
+        });
+    });
+}
+
+export function getTransactionByBlockHash(options){
+    return new Promise((resolve, reject)=>{
+        apiCli.request({
+            url: `/blocks/detailedtx`,
             method: 'GET',
             ...(options||{})
         }).then(res=>{
@@ -91,7 +105,7 @@ export function getTransactionByHash(hash,options){
 export function getAccountsByPage(options){
     return new Promise((resolve, reject)=>{
         apiCli.request({
-            url: '/accounts',
+            url: '/accounts/getaccounts',
             method: 'GET',
             ...(options||{})
         }).then(res=>{
@@ -105,7 +119,7 @@ export function getAccountsByPage(options){
 export function getAccountByAddress(address,options){
     return new Promise((resolve, reject)=>{
         apiCli.request({
-            url: `/accounts/${address}`,
+            url: `/accounts/detailed?addr=${address}`,
             method: 'GET',
             ...(options||{})
         }).then(res=>{
@@ -116,10 +130,10 @@ export function getAccountByAddress(address,options){
     });
 }
 
-export function getTransactionsByAddress(address, options){
+export function getTransactionsByAddress(options){
     return new Promise((resolve, reject)=>{
         apiCli.request({
-            url: `/accounts/${address}/txs`,
+            url: `/accounts/detailedtxs`,
             method: 'GET',
             ...(options||{})
         }).then(res=>{
@@ -133,7 +147,7 @@ export function getTransactionsByAddress(address, options){
 export function requestSearch(options){
     return new Promise((resolve, reject)=>{
         apiCli.request({
-            url: `/search`,
+            url: `/index/search`,
             method: 'GET',
             ...(options||{})
         }).then(res=>{
@@ -147,7 +161,7 @@ export function requestSearch(options){
 export function getTxCountByDay(options){
     return new Promise((resolve, reject)=>{
         apiCli.request({
-            url: '/tx_count_by_day',
+            url: '/index/txcountbyday',
             method: 'GET',
             ...(options||{})
         }).then(res=>{

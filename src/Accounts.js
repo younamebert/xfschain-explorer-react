@@ -73,10 +73,14 @@ class Accounts extends React.Component {
         try {
             let pagedata = await api.getAccountsByPage({
                 params: {
-                    p: pageNum,
+                    page: pageNum,
                 }
             });
-            let { total, records } = pagedata;
+            if (pagedata.result==null){
+                return
+            }
+            let total = pagedata.result.limits;
+            let records  = pagedata.result.data;
             let pageSize = this.state.page.pageSize;
             let pn = parseInt(total / pageSize);
             let mod = total % pageSize;
@@ -111,8 +115,8 @@ class Accounts extends React.Component {
                                 name: intl.get('ACCOUNTS_ADDRESS'),
                                 render: (item) => {
                                     return (
-                                        <a href={`/accounts/${item.address}`}>
-                                            {item.address}
+                                        <a href={`/accounts/${item.Address}`}>
+                                            {item.Address}
                                         </a>
                                     );
                                 }
@@ -123,7 +127,7 @@ class Accounts extends React.Component {
                                 thStyle: { textAlign: 'right' },
                                 tdStyle: {textAlign: 'right' },
                                 render: (item) => {
-                                    let val = atto2base(item.balance);
+                                    let val = atto2base(item.Balance);
                                     return (
                                         <span>
                                             {defaultrNumberFormatFF6(val)}
@@ -142,7 +146,7 @@ class Accounts extends React.Component {
                                     return (
                                         <span>
                                             {/* {item.balance} */}
-                                            {defaultIntNumberFormat(item.nonce)}
+                                            {defaultIntNumberFormat(item.Nonce)}
                                         </span>
                                     );
                                 }
@@ -155,7 +159,7 @@ class Accounts extends React.Component {
                                 render: (item) => {
                                     return (
                                         <span className="fs-6">
-                                            {item.updateTime}
+                                            {item.UpdateTime}
                                         </span>
                                     );
                                 }

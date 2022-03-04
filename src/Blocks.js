@@ -7,7 +7,7 @@ import { Table,Pagination } from './components';
 import { timeformat } from './util';
 import intl from 'react-intl-universal';
 import services from './services';
-import { atto2base } from './util/xfslibutil';
+// import { atto2base } from './util/xfslibutil';
 import { defaultIntNumberFormat,defaultrNumberFormatFF4 } from './util/common';
 const api = services.api;
 function PaginationWapper(props) {
@@ -75,6 +75,9 @@ class Blocks extends React.Component {
             let pagedata = await api.getBlocksByPage({params: {
                 page: pageNum,
             }});
+            if (pagedata.result==null){
+                return
+            }
             let total = pagedata.result.limits;
             let records = pagedata.result.data;
             let pageSize = this.state.page.pageSize;

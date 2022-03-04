@@ -1,10 +1,32 @@
 import React from 'react';
+import {
+    useLocation,
+} from "react-router-dom";
 import intl from 'react-intl-universal';
-import { Table, } from './components';
+import { Table,Pagination } from './components';
 import { timeformat } from './util';
 import services from './services';
 import { atto2base } from './util/xfslibutil';
+import qs from 'qs';
 import { defaultIntNumberFormat, defaultrNumberFormatFF4,defaultrNumberFormatFF6 } from './util/common';
+function PaginationWapper(props) {
+    let location = useLocation();
+    const { total, pageSize, address } = props;
+    const { search } = location;
+    const sq = qs.parse(search.replace(/^\?/, ''));
+    let pageNum = sq['p'];
+    if (!pageNum) {
+        pageNum = 1;
+    }
+    return (
+        <Pagination current={pageNum}
+            firstLableText={intl.get('PAGE_TABLE_PAGINATION_FIRST')}
+            pageLableText={intl.get('PAGE_TABLE_PAGINATION_PAGE')}
+            lastLableText={intl.get('PAGE_TABLE_PAGINATION_LAST')}
+            pathname={`/blocks/${address}`}
+            pageSize={pageSize} total={total} />
+    );
+}
 const api = services.api;
 class BlockDetail extends React.Component {
     constructor(props) {
@@ -15,70 +37,94 @@ class BlockDetail extends React.Component {
                 paddingTop: '1rem',
                 paddingBottom: '1rem'
             },
-            data: {
-                header: {
-                    id: 0,
-                    hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                    height: 0,
-                    version: 0,
-                    hashPrevBlock: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                    timestamp: 0,
-                    coinbase: "000000000000000000000000000000000",
-                    stateRoot: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                    transactionsRoot: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                    receiptsRoot: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                    gasLimit: 0,
-                    gasUsed: 0,
-                    bits: 0,
-                    nonce: 0,
-                    extraNonce: "0",
-                    txCount: 0,
-                    rewards: "0"
-                },
-                transactions: [
-                    // {
-                    //     id: 33001,
-                    //     blockHash: "0x000000066bd59cb78e12e76d43706c38218a297d1ebf4717c7618f6efacb284c",
-                    //     blockHeight: 23325,
-                    //     blockTime: 1640863204,
-                    //     version: 0,
-                    //     from: "YTYQ9j75fcvCB7at2UB6ot2rXPCPPKhx2",
-                    //     to: "fyjs3YU8AVakCua2etn1uqfkY8dcBUWne",
-                    //     gasPrice: "10000000000",
-                    //     gasLimit: "25000",
-                    //     gasUsed: "25000",
-                    //     gasFee: "250000000000000",
-                    //     data: null,
-                    //     nonce: 198,
-                    //     value: "420000000000000000",
-                    //     signature: null,
-                    //     hash: "0x96884b53f5a0540453e9e2fc92aa963bd46b6deb8fbbb2b8ce3ad8a32c9fa20b",
-                    //     status: 1,
-                    //     type: 0
-                    // },
-                ]
-            }
+            page: {
+                pageSize: 20,
+                total: 0
+            },
+            blockheader: {
+                // id: 0,
+                // hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
+                // height: 0,
+                // version: 0,
+                // hashPrevBlock: "0x0000000000000000000000000000000000000000000000000000000000000000",
+                // timestamp: 0,
+                // coinbase: "000000000000000000000000000000000",
+                // stateRoot: "0x0000000000000000000000000000000000000000000000000000000000000000",
+                // transactionsRoot: "0x0000000000000000000000000000000000000000000000000000000000000000",
+                // receiptsRoot: "0x0000000000000000000000000000000000000000000000000000000000000000",
+                // gasLimit: 0,
+                // gasUsed: 0,
+                // bits: 0,
+                // nonce: 0,
+                // extraNonce: "0",
+                // txCount: 0,
+                // rewards: "0"
+            },
+            transactions: [
+            ]
         }
     }
+    getBlockDetailTxs = async() => {
+        const {location,match } = this.props;
+        const { params } = match;
+        const { search } = location;
+        const sq = qs.parse(search.replace(/^\?/, ''));
+        let pageNum = sq['p'];
+        pageNum = parseInt(pageNum || 1);
+        try {
+            let pagedata = await api.getTransactionByBlockHash({
+                params: {
+                    blockhash:params.hash,
+                    page:pageNum,
+                }
+            });
+            if (pagedata.result==null){
+                return
+            }
+            // console.log(JSON.stringify(pagedata.result.data))
+            const total = pagedata.result.limits;
+            const records = pagedata.result.data;
+            let pageSize = this.state.page.pageSize;
+            let pn = parseInt(total / pageSize);
+            let mod = total % pageSize;
+            if (mod > 0) {
+                pn += 1;
+            }
+            if (pageNum > pn) {
+                throw new Error('pagenum overflow');
+            }
+            this.setState({
+                page: {
+                    total: total,
+                    pageSize: pageSize
+                },
+                transactions:records
+            });
+        } catch (e) {
+            console.log(e);
+        }
+      
+     };
     async componentDidMount() {
         const { history, match } = this.props;
         const { params } = match;
         try {
             const data = await api.getBlockByHash(params.hash);
-            this.setState({ data: data });
+            this.setState({ blockheader: data.result.data });
         } catch (e) {
             history.replace('/404');
             return;
         }
+        this.getBlockDetailTxs()
     }
     render() {
-        let time = parseInt(this.state.data.header.timestamp);
+        let time = parseInt(this.state.blockheader.Timestamp);
         const timestr = timeformat(new Date(time * 1000));
-        const blockRewards = atto2base(this.state.data.header.rewards);
+        const blockRewards = atto2base(this.state.blockheader.Rewards);
         return (
             <div>
                 <h1 className="mb-4">
-                    {intl.get('PAGE_TITLE_BLOCK_DETAIL')}&nbsp;#&nbsp;{this.state.data.header.height}
+                    {intl.get('PAGE_TITLE_BLOCK_DETAIL')}&nbsp;#&nbsp;{this.state.blockheader.Height}
                 </h1>
                 <div className="card mb-4">
                     <ul className="list-group list-group-flush">
@@ -89,7 +135,7 @@ class BlockDetail extends React.Component {
                                 </div>
                                 <div className="col-md-10">
                                     <div className="d-flex">
-                                        {this.state.data.header.height}
+                                        {this.state.blockheader.Height}
                                     </div>
                                 </div>
                             </div>
@@ -100,7 +146,7 @@ class BlockDetail extends React.Component {
                                     {intl.get('BLOCK_DETAIL_VERSION')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {this.state.data.header.version}
+                                    {this.state.blockheader.Version}
                                 </div>
                             </div>
                         </li>
@@ -110,8 +156,8 @@ class BlockDetail extends React.Component {
                                     {intl.get('BLOCK_DETAIL_PREV_BLOCK_HASH')}:
                                 </div>
                                 <div className="col-md-10">
-                                    <a href={`/blocks/${this.state.data.header.hashPrevBlock}`}>
-                                        {this.state.data.header.hashPrevBlock}
+                                    <a href={`/blocks/${this.state.blockheader.HashPrevBlock}`}>
+                                        {this.state.blockheader.HashPrevBlock}
                                     </a>
                                 </div>
                             </div>
@@ -122,7 +168,7 @@ class BlockDetail extends React.Component {
                                     {intl.get('BLOCK_DETAIL_HASH')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {this.state.data.header.hash}
+                                    {this.state.blockheader.Hash}
                                 </div>
                             </div>
                         </li>
@@ -142,8 +188,8 @@ class BlockDetail extends React.Component {
                                     {intl.get('BLOCK_DETAIL_COINBASE')}:
                                 </div>
                                 <div className="col-md-10">
-                                    <a href={`/accounts/${this.state.data.header.coinbase}`}>
-                                        {this.state.data.header.coinbase}
+                                    <a href={`/accounts/${this.state.blockheader.Coinbase}`}>
+                                        {this.state.blockheader.Coinbase}
                                     </a>
                                 </div>
                             </div>
@@ -165,7 +211,7 @@ class BlockDetail extends React.Component {
                                     {intl.get('BLOCK_DETAIL_STATE_ROOT_HASH')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {this.state.data.header.stateRoot}
+                                    {this.state.blockheader.StateRoot}
                                 </div>
                             </div>
                         </li>
@@ -175,7 +221,7 @@ class BlockDetail extends React.Component {
                                     {intl.get('BLOCK_DETAIL_TRANSACTIONS_ROOT_HASH')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {this.state.data.header.transactionsRoot}
+                                    {this.state.blockheader.TransactionsRoot}
                                 </div>
                             </div>
                         </li>
@@ -185,7 +231,7 @@ class BlockDetail extends React.Component {
                                     {intl.get('BLOCK_DETAIL_RECEIPTS_ROOT_HASH')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {this.state.data.header.receiptsRoot}
+                                    {this.state.blockheader.ReceiptsRoot}
                                 </div>
                             </div>
                         </li>
@@ -195,7 +241,7 @@ class BlockDetail extends React.Component {
                                     {intl.get('BLOCK_DETAIL_GAS_LIMIT')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {defaultIntNumberFormat(this.state.data.header.gasLimit)}
+                                    {defaultIntNumberFormat(this.state.blockheader.GasLimit)}
                                 </div>
                             </div>
                         </li>
@@ -205,7 +251,7 @@ class BlockDetail extends React.Component {
                                     {intl.get('BLOCK_DETAIL_GAS_USED')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {defaultIntNumberFormat(this.state.data.header.gasUsed)}
+                                    {defaultIntNumberFormat(this.state.blockheader.GasUsed)}
                                 </div>
                             </div>
                         </li>
@@ -215,7 +261,7 @@ class BlockDetail extends React.Component {
                                     {intl.get('BLOCK_DETAIL_BITS')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {this.state.data.header.bits}
+                                    {this.state.blockheader.Bits}
                                 </div>
                             </div>
                         </li>
@@ -225,7 +271,7 @@ class BlockDetail extends React.Component {
                                     {intl.get('BLOCK_DETAIL_NONCE')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {this.state.data.header.nonce}
+                                    {this.state.blockheader.Nonce}
                                 </div>
                             </div>
                         </li>
@@ -235,7 +281,7 @@ class BlockDetail extends React.Component {
                                     {intl.get('BLOCK_DETAIL_EXTRA_NONCE')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {this.state.data.header.extraNonce}
+                                    {this.state.blockheader.ExtraNonce}
                                 </div>
                             </div>
                         </li>
@@ -246,12 +292,13 @@ class BlockDetail extends React.Component {
                                     {intl.get('BLOCK_DETAIL_TXCOUNT')}:
                                 </div>
                                 <div className="col-md-10">
-                                    {defaultIntNumberFormat(this.state.data.header.txCount)}
+                                    {defaultIntNumberFormat(this.state.blockheader.TxCount)}
                                 </div>
                             </div>
                         </li>
                     </ul>
                 </div>
+
 
                 <div className="card">
                     <div className="card-header">
@@ -265,8 +312,8 @@ class BlockDetail extends React.Component {
                                 render: (item) => {
                                     return (
                                         <div className="text-truncate">
-                                            <a href={`/txs/${item.hash}`}>
-                                                {item.hash}
+                                            <a href={`/txs/${item.Hash}`}>
+                                                {item.Hash}
                                             </a>
                                         </div>
                                     );
@@ -278,8 +325,8 @@ class BlockDetail extends React.Component {
                                 render: (item) => {
                                     return (
                                         <div className="text-truncate">
-                                            <a href={`/accounts/${item.from}`}>
-                                                {item.from}
+                                            <a href={`/accounts/${item.TxFrom}`}>
+                                                {item.TxFrom}
                                             </a>
                                         </div>
 
@@ -292,8 +339,8 @@ class BlockDetail extends React.Component {
                                 render: (item) => {
                                     return (
                                         <div className="text-truncate">
-                                            <a href={`/accounts/${item.to}`}>
-                                                {item.to}
+                                            <a href={`/accounts/${item.TxTo}`}>
+                                                {item.TxTo}
                                             </a>
                                         </div>
                                     );
@@ -304,7 +351,7 @@ class BlockDetail extends React.Component {
                                 thStyle: { textAlign: 'right' },
                                 tdStyle: { textAlign: 'right' },
                                 render: (item) => {
-                                    let val = atto2base(item.value);
+                                    let val = atto2base(item.Value);
                                     return (
                                         <span>
                                             {defaultrNumberFormatFF4(val)}
@@ -320,7 +367,7 @@ class BlockDetail extends React.Component {
                                 thStyle: { textAlign: 'right' },
                                 tdStyle: { textAlign: 'right' },
                                 render: (item) => {
-                                    let val = atto2base(item.gasFee);
+                                    let val = atto2base(item.GasFee);
                                     return (
                                         <span>
                                             {defaultrNumberFormatFF6(val)}
@@ -330,9 +377,15 @@ class BlockDetail extends React.Component {
                                         </span>
                                     );
                                 }
-                            },
-                        ]} data={this.state.data.transactions} click={() => { }} >
+                            }, 
+                        ]} data={this.state.transactions} click={() => { }} >
                         </Table>
+                    </div>
+                    <div className="card-footer">
+                        <PaginationWapper
+                            address={this.state.blockheader.Hash}
+                            pageSize={this.state.page.pageSize}
+                            total={this.state.page.total} />
                     </div>
                 </div>
             </div>

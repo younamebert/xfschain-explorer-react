@@ -7,11 +7,14 @@ import { defaultIntNumberFormat,defaultrNumberFormatFF2,defaultrNumberFormatFF4,
 import { atto2base } from './util/xfslibutil';
 import Chart from "react-apexcharts";
 import moment from 'moment';
-import { flatMap } from 'lodash';
+import {  isNil } from 'lodash';
 const api = services.api;
 
 
 function splitAndEllipsisAddress(address, len=5){
+    if (isNil(address)){
+        return ""
+    }
     let start = address.substring(0, len);
     let last = address.substring(address.length, address.length-len);
     return [start,'...', last].join('');
@@ -89,103 +92,104 @@ class Home extends React.Component {
                 }
             ],
             latestBlocks: [
-                {
-                    id: 12112,
-                    hash: "0x00000062be70b7bf0319404c8ddfb0abd0c741a29b4bb98a2f92796e48580966",
-                    height: 12111,
-                    version: 0,
-                    hashPrevBlock: "0x000000dca98d022526682c1165f001c12f71a335240ffe28a147dbc21c5e984a",
-                    timestamp: 1639535358,
-                    coinbase: "ig3Zb1paNi1iTob5k3853cDPVSBaCuLZU",
-                    stateRoot: "0x8da47c1f919bc94af56a9421c2681dfeb902edd6841180a7040f4ffce83fa475",
-                    transactionsRoot: "0x3cb1db3623d0a999e92f82b930ff1520406d17de11621818fe728fb5f7e9d8ad",
-                    receiptsRoot: "0x89642220dc068df76533ed40678dba141fbdf1ca1626bf87eef43bf5c54b9a35",
-                    gasLimit: 2500000,
-                    gasUsed: 250000,
-                    bits: 4278190109,
-                    nonce: 46300,
-                    extraNonce: "12603133301523114000",
-                    txCount: 10,
-                    rewards: "0"
-                },
+                // {
+                //     id: 12112,
+                //     hash: "0x00000062be70b7bf0319404c8ddfb0abd0c741a29b4bb98a2f92796e48580966",
+                //     height: 12111,
+                //     version: 0,
+                //     hashPrevBlock: "0x000000dca98d022526682c1165f001c12f71a335240ffe28a147dbc21c5e984a",
+                //     timestamp: 1639535358,
+                //     coinbase: "ig3Zb1paNi1iTob5k3853cDPVSBaCuLZU",
+                //     stateRoot: "0x8da47c1f919bc94af56a9421c2681dfeb902edd6841180a7040f4ffce83fa475",
+                //     transactionsRoot: "0x3cb1db3623d0a999e92f82b930ff1520406d17de11621818fe728fb5f7e9d8ad",
+                //     receiptsRoot: "0x89642220dc068df76533ed40678dba141fbdf1ca1626bf87eef43bf5c54b9a35",
+                //     gasLimit: 2500000,
+                //     gasUsed: 250000,
+                //     bits: 4278190109,
+                //     nonce: 46300,
+                //     extraNonce: "12603133301523114000",
+                //     txCount: 10,
+                //     rewards: "0"
+                // },
             ],
             latestTxs: [
-                {
-                    id: 10571,
-                    blockHash: "0x000000a797900f9a7a6bd6185bd111c47b23f649811c4e383b83d5619d861f09",
-                    blockHeight: 17082,
-                    blockTime: 1639652840,
-                    version: 0,
-                    from: "f3A6FZfuesZ98dFmduCR7YLffmkqnjgnA",
-                    to: "fKg8tMyp4uvMFiJ9J71Xxn5G5dbLbse4Q",
-                    gasPrice: "10000000000",
-                    gasLimit: "25000",
-                    gasUsed: "25000",
-                    gasFee: "250000000000000",
-                    data: null,
-                    nonce: 858,
-                    value: "410000000000000000",
-                    signature: null,
-                    hash: "0x463ff654b54bbb815e8e70dbae28d061e5348b53cabdf94a5f7d3e55c5d17136",
-                    status: 1,
-                    type: 0
-                },
+                // {
+                //     id: 10571,
+                //     blockHash: "0x000000a797900f9a7a6bd6185bd111c47b23f649811c4e383b83d5619d861f09",
+                //     blockHeight: 17082,
+                //     blockTime: 1639652840,
+                //     version: 0,
+                //     from: "f3A6FZfuesZ98dFmduCR7YLffmkqnjgnA",
+                //     to: "fKg8tMyp4uvMFiJ9J71Xxn5G5dbLbse4Q",
+                //     gasPrice: "10000000000",
+                //     gasLimit: "25000",
+                //     gasUsed: "25000",
+                //     gasFee: "250000000000000",
+                //     data: null,
+                //     nonce: 858,
+                //     value: "410000000000000000",
+                //     signature: null,
+                //     hash: "0x463ff654b54bbb815e8e70dbae28d061e5348b53cabdf94a5f7d3e55c5d17136",
+                //     status: 1,
+                //     type: 0
+                // },
                 
             ],
         }
     }
    gethomedata = async() => {
+    try{
        var status = await api.getStatus();
        var latest = await api.getLatest();
 
        var blocks = await latest.result.blocks
        var txs = await latest.result.txs
-       console.log(JSON.stringify(txs))
-     this.setState({status:status.result,latestBlocks: blocks,latestTxs:txs})
-     
+
+       this.setState({status:status.result,latestBlocks: blocks,latestTxs:txs})
+    } catch(e){
+      console.log(JSON.stringify(e))
+    }   
+    };
+
+    getTxCountByDay= async() => {
+        try{
+        let txCountByDay = await api.getTxCountByDay();
+        let obj = txCountByDay.result
+        let times = []
+        let counts = []
+        for(let i in obj){
+            times.push(moment(obj[i].timestamp*1000).format('MM-DD'))
+            counts.push(obj[i].txcount)
+        }
+        this.setState({
+            txCountByDayChartOptions:{
+                ...this.state.txCountByDayChartOptions,
+                xaxis: {
+                    ...this.state.txCountByDayChartOptions.xaxis,
+                    categories: times,
+                }, 
+            },
+            txCountByDayChartSeries: [
+                {
+                    ...this.state.txCountByDayChartSeries[0],
+                    data: counts,
+                }
+            ]
+        })
+    } catch(e){
+        console.log(JSON.stringify(e))
+      }  
     };
         
     async componentDidMount() {
         this.gethomedata()
-        try{
-            let status = await api.getStatus();
-            let latest = await api.getLatest();
-            
-            const { blocks, txs } = latest;
-            
-            let txCountByDay = await api.getTxCountByDay();
-        let parseTxCountByDay = () =>{
-            let times = txCountByDay.map(({time})=>{
-                return moment(time).format('MM-DD');
-            });
-            let counts = txCountByDay.map(({count})=>{
-                return count;
-            })
-            // let status.
-            console.log("bert",JSON.stringify(status));
-            this.setState({
-                status: status.result, latestBlocks: blocks, latestTxs: txs,
-                txCountByDayChartOptions:{
-                    ...this.state.txCountByDayChartOptions,
-                    xaxis: {
-                        ...this.state.txCountByDayChartOptions.xaxis,
-                        categories: times,
-                    }, 
-                },
-                txCountByDayChartSeries: [
-                    {
-                        ...this.state.txCountByDayChartSeries[0],
-                        data: counts,
-                    }
-                ]
-            });
+        this.getTxCountByDay()
+    
             // action.getRefundList(theQuery)
-        }
+        
         // console.log(JSON.stringify(this.status));
-        parseTxCountByDay();
-     } catch(e){
-
-        }
+        // parseTxCountByDay();
+    
     }
     render() {
         const difficultyCardText = (num)=>{
@@ -491,15 +495,15 @@ class Home extends React.Component {
                                         render: (item) => {
                                             console.log(item.From)
                                             
-                                            // var fromAddr = splitAndEllipsisAddress(item.From);
-                                            // let toAddress = splitAndEllipsisAddress(item.To);
+                                            var fromAddr = splitAndEllipsisAddress(item.TxFrom);
+                                            var toAddress = splitAndEllipsisAddress(item.TxTo);
                                             return (
                                                 <span>
-                                                    <a href={`/accounts/${item.From}`}>
-                                                            {item.From}
+                                                    <a href={`/accounts/${item.TxFrom}`}>
+                                                            {fromAddr}
                                                         </a>&nbsp;&raquo;&nbsp;
-                                                        <a href={`/accounts/${item.To}`}>
-                                                            {item.To}
+                                                        <a href={`/accounts/${item.TxTo}`}>
+                                                            {toAddress}
                                                         </a>
                                                 </span>
                                             );
