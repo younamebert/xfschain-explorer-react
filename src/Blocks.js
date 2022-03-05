@@ -7,7 +7,7 @@ import { Table,Pagination } from './components';
 import { timeformat } from './util';
 import intl from 'react-intl-universal';
 import services from './services';
-// import { atto2base } from './util/xfslibutil';
+import { atto2base } from './util/xfslibutil';
 import { defaultIntNumberFormat,defaultrNumberFormatFF4 } from './util/common';
 const api = services.api;
 function PaginationWapper(props) {
@@ -190,10 +190,10 @@ class Blocks extends React.Component {
                                     tdStyle: { textAlign: 'right', },
                                     render: (item) => {
                                         
-                                        // let value = atto2base(item.Rewards);
+                                        let value = atto2base(item.Rewards);
                                         return (
                                             <span>
-                                                {defaultrNumberFormatFF4(item.Rewards)}
+                                                {defaultrNumberFormatFF4(value)}
                                                 <span style={{
                                                 fontSize: '.8rem',
                                             }}> XFSC</span>

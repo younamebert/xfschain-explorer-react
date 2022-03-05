@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiCli = axios.create({
-    baseURL: process.env.REACT_APP_API_BASE_URL,
+    baseURL:"http://192.168.2.13:8080",
     timeout: 1000
 });
 

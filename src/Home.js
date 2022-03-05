@@ -449,10 +449,10 @@ class Home extends React.Component {
                                     thStyle: {textAlign: 'right'},
                                     tdStyle: { textAlign: 'right'},
                                     render: (item) => {
-                                        // const rewards = atto2base(item.Rewards);
+                                        const rewards = atto2base(item.Rewards);
                                         return (
                                             <span>
-                                                {defaultrNumberFormatFF4(item.Rewards)}
+                                                {defaultrNumberFormatFF4(rewards)}
                                                 <span style={{
                                                 fontSize: '.8rem',
                                             }}> XFSC</span>

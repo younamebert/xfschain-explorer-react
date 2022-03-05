@@ -4,6 +4,7 @@ import {
     useLocation,
 } from "react-router-dom";
 import { Table, Pagination } from './components';
+import moment from "moment";
 import intl from 'react-intl-universal';
 import services from './services';
 import { atto2base } from './util/xfslibutil';
@@ -159,7 +160,7 @@ class Accounts extends React.Component {
                                 render: (item) => {
                                     return (
                                         <span className="fs-6">
-                                            {item.UpdateTime}
+                                            {moment(item.UpdateTime).format("YYYY-MM-DD HH:mm:ss")}
                                         </span>
                                     );
                                 }

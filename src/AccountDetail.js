@@ -4,6 +4,7 @@ import {
 } from "react-router-dom";
 import intl from 'react-intl-universal';
 import { Table, Pagination } from './components';
+import moment from "moment";
 import services from './services';
 import { atto2base } from './util/xfslibutil';
 import {  isNil } from 'lodash';
@@ -131,9 +132,9 @@ class AccountDetail extends React.Component {
                 )
             }
             
-            let text = intl.get('ACCOUNT_DETAIL_TYPE_CONTRACT');
+            let text = intl.get('ACCOUNT_DETAIL_TYPE_EXTERNAL');
             if (type === 1){
-                text = intl.get('ACCOUNT_DETAIL_TYPE_EXTERNAL');
+                text = intl.get('ACCOUNT_DETAIL_TYPE_CONTRACT');
             }
             return (
                 <div>
@@ -225,7 +226,7 @@ class AccountDetail extends React.Component {
                                 {intl.get('ACCOUNT_DETAIL_UPDATE_TIME')}:
                             </div>
                             <div className="col-md-10">
-                                {this.state.account.UpdateTime}
+                            {moment(this.state.account.UpdateTime).format("YYYY-MM-DD HH:mm:ss")}
                             </div>
                         </div>
                     </li>
@@ -292,7 +293,7 @@ class AccountDetail extends React.Component {
                                 render: (item) => {
                                     return (
                                         <span className="fs-6">
-                                            {item.CreateTime}
+                                             {moment(item.CreateTime).format("YYYY-MM-DD HH:mm:ss")}
                                         </span>
                                     );
                                 }

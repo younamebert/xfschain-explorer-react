@@ -3,6 +3,7 @@ import React from 'react';
 import {
     useLocation,
 } from "react-router-dom";
+import moment from "moment";
 import intl from 'react-intl-universal';
 import { Table, Pagination } from './components';
 import services from './services';
@@ -118,7 +119,7 @@ class Transactions extends React.Component {
                                 render: (item) => {
                                     return (
                                         <span className="fs-6">
-                                            {item.CreateTime}
+                                            {moment(item.CreateTime).format("YYYY-MM-DD HH:mm:ss")}
                                         </span>
                                     );
                                 }
@@ -179,10 +180,10 @@ class Transactions extends React.Component {
                                 thStyle: { textAlign: 'right' },
                                 tdStyle: { textAlign: 'right' },
                                 render: (item) => {
-                                    // let val = atto2base(item.value);
+                                    let val = atto2base(item.Value);
                                     return (
                                         <span>
-                                            {defaultrNumberFormatFF4(item.value)}
+                                            {defaultrNumberFormatFF4(val)}
                                             <span style={{
                                                 fontSize: '.8rem',
                                             }}> XFSC</span>
